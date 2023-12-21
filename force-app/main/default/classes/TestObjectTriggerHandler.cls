@@ -7,12 +7,12 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
         OBJEC_TYPE = TestObject__c.getSObjectType();
     }
 
-    protected override void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
+    protected override void beforeUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
-        List<TestObject__c> testObjectsNew = newChangedObjects;
+        List<TestObject__c> testObjectsNew = newChangedRecords;
         Map<Id, TestObject__c> testObjectsOldMap = 
-            new Map<Id, TestObject__c>((List<TestObject__c>) oldChangedObjectsMap.values());
+            new Map<Id, TestObject__c>((List<TestObject__c>) oldChangedRecordsMap.values());
 
         switch on scenario {
             when SCENARIO_0 {
@@ -29,12 +29,12 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
-    protected override void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
+    protected override void afterUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
-        List<TestObject__c> testObjectsNew = newChangedObjects;
+        List<TestObject__c> testObjectsNew = newChangedRecords;
         Map<Id, TestObject__c> testObjectsOldMap = 
-            new Map<Id, TestObject__c>((List<TestObject__c>) oldChangedObjectsMap.values());
+            new Map<Id, TestObject__c>((List<TestObject__c>) oldChangedRecordsMap.values());
 
         switch on scenario {
             when SCENARIO_0 {

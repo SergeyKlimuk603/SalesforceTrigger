@@ -131,6 +131,18 @@ private class TriggerRecursionTest {
     }
 
     @IsTest
+    static void test_memberTextChanged_Scenario1_500_3() {
+        Integer familiesAmount = 500;
+        Integer familyMembersAmount = 3;
+
+        test_memberTextChanged_Scenario1(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_1. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
+    }
+
+    @IsTest
     static void test_memberTextChanged_Scenario1_1001_3() {
         Integer familiesAmount = 1001;
         Integer familyMembersAmount = 3;

@@ -1,6 +1,7 @@
 
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
+    public static Integer triggerDepth = 0;
    
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
@@ -9,8 +10,8 @@ public virtual class TriggerHandler {
             return;
         }
 
-        List<SObject> oldChangedObjects = new List<SObject>();
-        List<SObject> newChangedObjects = new List<SObject>();
+        List<SObject> oldChangedRecords = new List<SObject>();
+        List<SObject> newChangedRecords = new List<SObject>();
         
         switch on Trigger.operationType {
             when BEFORE_INSERT {
@@ -20,26 +21,33 @@ public virtual class TriggerHandler {
                 this.afterInsert(Trigger.new, Trigger.newMap);
             }
             when BEFORE_UPDATE {
-                System.debug('-----Start Changed Record Finding before update');
+                triggerDepth++;
+                System.debug('------Start Changed Record Finding before update. triggerDepth: ' + triggerDepth);
 
-                if (filloutChangedRecordsForUpdate(oldChangedObjects, newChangedObjects)) {
+                if (filloutChangedRecordsForUpdate(oldChangedRecords, newChangedRecords)) {
+                    triggerDepth--;
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding before update. Records for beforeUpdate: ' + newChangedObjects.size());
+                System.debug('-----End Changed Record Finding before update. Records for beforeUpdate: ' + newChangedRecords.size());
 
-                this.beforeUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
+                this.beforeUpdate(newChangedRecords, new Map<Id, SObject>(oldChangedRecords));
+                triggerDepth--;
             }
             when AFTER_UPDATE {
-                System.debug('-----Start Changed Record Finding after update');
+                triggerDepth++;
+                System.debug('------Start Changed Record Finding after update. triggerDepth: ' + triggerDepth);
     
-                if (filloutChangedRecordsForUpdate(oldChangedObjects, newChangedObjects)) {
+                if (filloutChangedRecordsForUpdate(oldChangedRecords, newChangedRecords)) {
+                    triggerDepth--;
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding after update. Records for afterUpdate: ' + newChangedObjects.size());
+                System.debug('-----End Changed Record Finding after update. Records for afterUpdate: ' + newChangedRecords.size());
 
-                this.afterUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
+                this.afterUpdate(newChangedRecords, new Map<Id, SObject>(oldChangedRecords));
+
+                triggerDepth--;
             }
             when BEFORE_DELETE {
                 this.beforeDelete(Trigger.old, Trigger.oldMap);
@@ -53,13 +61,13 @@ public virtual class TriggerHandler {
         }
     }
 
-    protected virtual void beforeInsert(List<SObject> newChangedObjects) {}
-    protected virtual void afterInsert(List<SObject> newChangedObjects, Map<Id, SObject> newChangedObjectsMap) {}
-    protected virtual void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
-    protected virtual void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
-    protected virtual void beforeDelete(List<SObject> oldChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
-    protected virtual void afterDelete(List<SObject> oldChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
-    protected virtual void afterUndelete(List<SObject> newChangedObjects, Map<Id, SObject> newChangedObjectsMap) {}
+    protected virtual void beforeInsert(List<SObject> newChangedRecords) {}
+    protected virtual void afterInsert(List<SObject> newChangedRecords, Map<Id, SObject> newChangedRecordsMap) {}
+    protected virtual void beforeUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {}
+    protected virtual void afterUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {}
+    protected virtual void beforeDelete(List<SObject> oldChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {}
+    protected virtual void afterDelete(List<SObject> oldChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {}
+    protected virtual void afterUndelete(List<SObject> newChangedRecords, Map<Id, SObject> newChangedRecordsMap) {}
 
     private Boolean isTriggerAvailable() {
         return disabledTriggers.contains(OBJEC_TYPE);
@@ -84,19 +92,19 @@ public virtual class TriggerHandler {
         return hasNoChangedRecords;
     }
 
-    private Boolean areRecordsNotEquals(SObject record, SObject newRecord) {
+    private Boolean areRecordsNotEquals(SObject oldRecord, SObject newRecord) {
         List<String> ommitedKeys = new List<String>{
             'LastModifiedDate',
             'SystemModstamp'
         };
-        Map<String, Object> recordMap = record.getPopulatedFieldsAsMap();
+        Map<String, Object> oldRecordMap = oldRecord.getPopulatedFieldsAsMap();
         Map<String, Object> newRecordMap = newRecord.getPopulatedFieldsAsMap();
         Set<String> allKeys = new Set<String>();
-        allKeys.addAll(recordMap.keySet());
+        allKeys.addAll(oldRecordMap.keySet());
         allKeys.addAll(newRecordMap.keySet());
         // System.debug(
-        //     + '---record{TextField__c = '  + recordMap.get('TextField__c') + ', NumberField__c = ' 
-        //         + recordMap.get('NumberField__c') + '}   !!!   '
+        //     + '---oldRecord{TextField__c = '  + oldRecordMap.get('TextField__c') + ', NumberField__c = ' 
+        //         + oldRecordMap.get('NumberField__c') + '}   !!!   '
         //     + '---newRecordMap{TextField__c = '  + newRecordMap.get('TextField__c') + ', NumberField__c = ' 
         //         + newRecordMap.get('NumberField__c') + '}'
         // );
@@ -106,11 +114,19 @@ public virtual class TriggerHandler {
                 continue;
             }
 
-            if (recordMap.get(key) != newRecordMap.get(key)) {
+            if (oldRecordMap.get(key) != newRecordMap.get(key)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    // Работает нестабильно
+    private Boolean areRecordsNotEqualsV1(SObject oldRecord, SObject newRecord) {
+        return oldRecord.clone(false, false, false, false)
+            != newRecord.clone(false, false, false, false);
+
+        // return oldRecord != newRecord;
     }
 }
