@@ -14,7 +14,7 @@ insert testObjectsForCreate;
 
 //---------------------------------------------------------------------------------------------
 // Update records
-List<TestObject__c> testObjectsForUpdate = [SELECT Id, Name, TextAreaField__c FROM TestObject__c WHERE Name LIKE 'TestTriggerRecursion_%'];
+List<TestObject__c> testObjectsForUpdate = [SELECT Id, Name, TextAreaField__c, NumberField__c FROM TestObject__c WHERE Name LIKE 'TestTriggerRecursion_%'];
 for(TestObject__c testObject : testObjectsForUpdate) {
     testObject.TextAreaField__c += '<p> updated </p>';
 }

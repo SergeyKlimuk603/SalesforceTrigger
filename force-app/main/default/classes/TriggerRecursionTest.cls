@@ -29,21 +29,28 @@ private class TriggerRecursionTest {
     static void test_memberTextChanged_Scenario0_1() {
         Integer membersAmount = 1;
 
-        test_memberTextChanged_Scenario0(membersAmount, ' Scenario0 1 members');
+        test_memberTextChanged_Scenario0(membersAmount, ' Scenario_0. ' + membersAmount + ' members');
     }
 
     @IsTest
     static void test_memberTextChanged_Scenario0_201() {
         Integer membersAmount = 201;
 
-        test_memberTextChanged_Scenario0(membersAmount, ' Scenario0 201 members');
+        test_memberTextChanged_Scenario0(membersAmount, ' Scenario_0. ' + membersAmount + ' members');
+    }
+
+    @IsTest
+    static void test_memberTextChanged_Scenario0_301() {
+        Integer membersAmount = 301;
+
+        test_memberTextChanged_Scenario0(membersAmount, ' Scenario_0. ' + membersAmount + ' members');
     }
 
     @IsTest
     static void test_memberTextChanged_Scenario0_1001() {
         Integer membersAmount = 1001;
 
-        test_memberTextChanged_Scenario0(membersAmount, ' Scenario0 1001 members');
+        test_memberTextChanged_Scenario0(membersAmount, ' Scenario_0. ' + membersAmount + ' members');
     }
 
     static void test_memberTextChanged_Scenario0(Integer membersAmount, String details) {
@@ -77,9 +84,9 @@ private class TriggerRecursionTest {
         }
 
         Test.startTest();
-            System.debug('-----Start Update ' + details + ' -------------------------------------------');
+            System.debug('-----START UPDATE ' + details + ' -------------------------------------------');
             update membersForUpdate;
-            System.debug('-----End Update-------------------------------------------');
+            System.debug('-----END UPDATE-------------------------------------------');
         Test.stopTest();
 
         //startAssert----------------
@@ -89,9 +96,9 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObject__c member : membersAfterUpdate) {
-             System.debug('-----member.TextField: ' + member.TextField__c);
-             System.debug('-----member.NumberField__c: ' + member.NumberField__c);
-             System.debug('-----member.TextAreaField__c: ' + member.TextAreaField__c);
+            //  System.debug('-----member.TextField: ' + member.TextField__c);
+            //  System.debug('-----member.NumberField__c: ' + member.NumberField__c);
+            //  System.debug('-----member.TextAreaField__c: ' + member.TextAreaField__c);
             Assert.areEqual(fieldChanges, member.TextField__c);
             Assert.areEqual(fieldChanges, member.TextAreaField__c);
             Assert.areEqual((fieldChanges).length(), member.NumberField__c);
@@ -104,8 +111,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario1(familiesAmount, familyMembersAmount, ' Scenario1 1 family 3 members. Member changes');
-
+        test_memberTextChanged_Scenario1(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_1. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     @IsTest
@@ -113,8 +123,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 201;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario1(familiesAmount, familyMembersAmount, ' Scenario1 201 family 300 members. Member changes');
-
+        test_memberTextChanged_Scenario1(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_1. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     @IsTest
@@ -122,17 +135,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1001;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario1(familiesAmount, familyMembersAmount, ' Scenario1 1001 family 3 members. Member changes');
-
-    }
-
-    @IsTest
-    static void test_memberTextChanged_Scenario1_1_300() {
-        Integer familiesAmount = 1;
-        Integer familyMembersAmount = 300;
-
-        test_memberTextChanged_Scenario1(familiesAmount, familyMembersAmount, ' Scenario1 1 family 300 members');
-
+        test_memberTextChanged_Scenario1(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_1. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     static void test_memberTextChanged_Scenario1(Integer familiesAmount, Integer familyMembersAmount, String details) {
@@ -146,7 +153,8 @@ private class TriggerRecursionTest {
 
         //startAssert----------------
         List<TestObjectParent__c> familiesBeforeUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, 
+                (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
@@ -167,14 +175,15 @@ private class TriggerRecursionTest {
         }
 
         Test.startTest();
-            System.debug('-----Start Update ' + details + ' -------------------------------------------');
+            System.debug('-----START UPDATE ' + details + ' -------------------------------------------');
             update membersForUpdate;
-            System.debug('-----End Update-------------------------------------------');
+            System.debug('-----END UPDATE-------------------------------------------');
         Test.stopTest();
 
         //startAssert----------------
         List<TestObjectParent__c> familiesAfterUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, 
+                (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
@@ -194,8 +203,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1 family 3 members. Member changes');
-
+        test_memberTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     @IsTest
@@ -203,8 +215,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 201;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario2(familiesAmount, familyMembersAmount,  'Scenario2 201 family 300 members. Member changes');
-
+        test_memberTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     @IsTest
@@ -212,8 +227,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1001;
         Integer familyMembersAmount = 3;
 
-        test_memberTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1001 family 3 members. Member changes');
-
+        test_memberTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     @IsTest
@@ -221,8 +239,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1;
         Integer familyMembersAmount = 300;
 
-        test_memberTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1 family 300 members. Member changes');
-
+        test_memberTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Member changes'
+        );
     }
 
     static void test_memberTextChanged_Scenario2(Integer familiesAmount, Integer familyMembersAmount, String details) {
@@ -233,16 +254,19 @@ private class TriggerRecursionTest {
 
         //startAssert----------------
         List<TestObjectParent__c> familiesBeforeUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, 
+                (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
         for (TestObjectParent__c family : familiesBeforeUpdate) {
             // System.debug('-----family.TextField: ' + family.TextField__c);
             Assert.isNull(family.TextField__c);
+            Assert.isNull(family.NumberField__c);
             for (TestObject__c member : family.TestObjects__r) {
                 // System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
+                Assert.isNull(member.NumberField__c);
             }
         }
         //endAssert----------------
@@ -255,23 +279,26 @@ private class TriggerRecursionTest {
         }
 
         Test.startTest();
-            System.debug('-----Start Update ' + details + ' -------------------------------------------');
+            System.debug('-----START UPDATE ' + details + ' -------------------------------------------');
             update membersForUpdate;
-            System.debug('-----End Update-------------------------------------------');
+            System.debug('-----END UPDATE-------------------------------------------');
         Test.stopTest();
 
         //startAssert----------------
         List<TestObjectParent__c> familiesAfterUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, 
+                (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
         for (TestObjectParent__c family : familiesAfterUpdate) {
             // System.debug('-----family.TextField: ' + family.TextField__c);
             Assert.areEqual(fieldChanges + '   ' + family.Name, family.TextField__c);
+            Assert.areEqual((fieldChanges + '   ' + family.Name).length(), family.NumberField__c);
             for (TestObject__c member : family.TestObjects__r) {
                 // System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.areEqual(fieldChanges + '   ' + family.Name, member.TextField__c);
+                Assert.areEqual((fieldChanges + '   ' + family.Name).length(), member.NumberField__c);
             }
         }
         //endAssert----------------
@@ -282,8 +309,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1;
         Integer familyMembersAmount = 3;
 
-        test_familyTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1 family 3 members. Family changes');
-
+        test_familyTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Family changes'
+        );
     }
 
     @IsTest
@@ -291,8 +321,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 201;
         Integer familyMembersAmount = 3;
 
-        test_familyTextChanged_Scenario2(familiesAmount, familyMembersAmount,  'Scenario2 201 family 300 members. Family changes');
-
+        test_familyTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Family changes'
+        );
     }
 
     @IsTest
@@ -300,8 +333,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1001;
         Integer familyMembersAmount = 3;
 
-        test_familyTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1001 family 3 members. Family changes');
-
+        test_familyTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Family changes'
+        );
     }
 
     @IsTest
@@ -309,8 +345,11 @@ private class TriggerRecursionTest {
         Integer familiesAmount = 1;
         Integer familyMembersAmount = 300;
 
-        test_familyTextChanged_Scenario2(familiesAmount, familyMembersAmount, ' Scenario2 1 family 300 members. Family changes');
-
+        test_familyTextChanged_Scenario2(
+            familiesAmount, 
+            familyMembersAmount, 
+            ' Scenario_2. ' + familiesAmount + ' families ' + familyMembersAmount + ' members. Family changes'
+        );
     }
 
     static void test_familyTextChanged_Scenario2(Integer familiesAmount, Integer familyMembersAmount, String details) {
@@ -321,7 +360,7 @@ private class TriggerRecursionTest {
 
         //startAssert----------------
         List<TestObjectParent__c> familiesBeforeUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
@@ -348,7 +387,7 @@ private class TriggerRecursionTest {
         Test.stopTest();
         //startAssert----------------
         List<TestObjectParent__c> familiesAfterUpdate = [
-            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, NumberField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
@@ -365,7 +404,8 @@ private class TriggerRecursionTest {
 
     static Map<TestObjectParent__c, List<TestObject__c>> makeData(Integer familiesAmount, Integer familyMembersAmount){
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = new Map<TestObjectParent__c, List<TestObject__c>>();
-
+        TriggerHandler.disabledTriggers.add(TestObject__c.getSObjectType());
+        TriggerHandler.disabledTriggers.add(TestObjectParent__c.getSObjectType());
         List<TestObjectParent__c> families = new List<TestObjectParent__c>();
         for (Integer i = 0; i < familiesAmount; i++) {
             TestObjectParent__c family = new TestObjectParent__c(Name = 'family_' + i);
@@ -386,6 +426,9 @@ private class TriggerRecursionTest {
             }
         }
         insert members;
+
+        TriggerHandler.disabledTriggers.remove(TestObject__c.getSObjectType());
+        TriggerHandler.disabledTriggers.remove(TestObjectParent__c.getSObjectType());
         
         return membersByFamily;
     }

@@ -4,16 +4,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     public static String textFieldValueForTests;
 
     public TestObjectTriggerHandler() {
-        //System.debug('----TestObjectTriggerHandler runs' + '   ' + Trigger.operationType);
-        //System.debug('----Trigger.new: ' + Trigger.new);
-        //System.debug('----Trigger.old: ' + Trigger.old);
-
         OBJEC_TYPE = TestObject__c.getSObjectType();
     }
 
     protected override void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
-        // System.debug('-----records for update in before trigger: ' + newChangedObjects.size());
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         List<TestObject__c> testObjectsNew = newChangedObjects;
         Map<Id, TestObject__c> testObjectsOldMap = 
@@ -31,12 +26,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' finish');
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     protected override void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
-        // System.debug('-----records for update in after trigger: ' + newChangedObjects.size());
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
         List<TestObject__c> testObjectsNew = newChangedObjects;
         Map<Id, TestObject__c> testObjectsOldMap = 
@@ -55,7 +49,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' finish');
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     private void beforeUpdate0(List<TestObject__c> testObjectsNew, Map<Id, TestObject__c> testObjectsOldMap) {
@@ -83,11 +77,6 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             );
         }    
 
-        // // Записываем срабатывание триггера в запись объекта, на логику не влияет
-        // TriggerHandler.disabledTriggers.add(OBJEC_TYPE);
-        // update testObjectsForUpdate;
-        // TriggerHandler.disabledTriggers.remove(OBJEC_TYPE);
-
         update testObjectsForUpdate;
     }
 
@@ -105,7 +94,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
         // дочерних объектов того же родителя.
 
         Map<Id, TestObjectParent__c> parentsById = new Map<Id, TestObjectParent__c>([
-            SELECT Id, TextField__c, (SELECT Id, Name FROM TestObjects__r)
+            SELECT Id, TextField__c, NumberField__c, (SELECT Id, Name, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c 
             WHERE Id IN (SELECT TestObjectParent__c FROM TestObject__c WHERE Id IN :testObjectsNew)
         ]);
@@ -145,7 +134,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
         // затем у всех его дочерних объектов.
 
         Map<Id, TestObjectParent__c> parentsById = new Map<Id, TestObjectParent__c>([
-            SELECT Id, TextField__c 
+            SELECT Id, TextField__c, NumberField__c
             FROM TestObjectParent__c 
             WHERE Id IN (SELECT TestObjectParent__c FROM TestObject__c WHERE Id IN :testObjectsNew)
         ]);

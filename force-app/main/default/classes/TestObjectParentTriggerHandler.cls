@@ -9,8 +9,7 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
     }
 
     protected override void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
-        // System.debug('-----records for update in before trigger: ' + newChangedObjects.size());
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         List<TestObjectParent__c> testObjectParentsNew = newChangedObjects;
         Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
@@ -25,12 +24,12 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' finish');
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
 
     }
 
     protected override void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
-        System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
+        System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
         List<TestObjectParent__c> testObjectParentsNew = newChangedObjects;
         Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
@@ -45,7 +44,7 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' finish');
+        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     private void beforeUpdate1(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
@@ -62,15 +61,17 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
 
+        for (TestObjectParent__c testObjectParent : testObjectParentsNew) {
+            testObjectParent.NumberField__c = testObjectParent.TextField__c.length();
+        }
     }
 
     private void afterUpdate2(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
      
         List<TestObjectParent__c> parentsById = new List<TestObjectParent__c>([
-            SELECT Id, TextField__c, (SELECT Id, TextField__c FROM TestObjects__r)
+            SELECT Id, TextField__c, NumberField__c, (SELECT Id, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
             WHERE Id IN :testObjectParentsNew
         ]);
