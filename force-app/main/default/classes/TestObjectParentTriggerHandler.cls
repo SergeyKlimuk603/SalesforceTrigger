@@ -8,19 +8,15 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         OBJEC_TYPE = TestObjectParent__c.getSObjectType();
     }
 
-    protected override void beforeUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
+    protected override void beforeUpdate() {
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
-        List<TestObjectParent__c> testObjectParentsNew = newChangedRecords;
-        Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
-            new Map<Id, TestObjectParent__c>((List<TestObjectParent__c>) oldChangedRecordsMap.values());
-
         switch on scenario {
             when SCENARIO_1 {
-                beforeUpdate1(testObjectParentsNew, testObjectParentsOldMap);
+                beforeUpdate1();
             }
             when SCENARIO_2 {
-                beforeUpdate2(testObjectParentsNew, testObjectParentsOldMap);
+                beforeUpdate2();
             }
         }
 
@@ -28,47 +24,45 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
 
     }
 
-    protected override void afterUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
+    protected override void afterUpdate() {
         System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
-        List<TestObjectParent__c> testObjectParentsNew = newChangedRecords;
-        Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
-            new Map<Id, TestObjectParent__c>((List<TestObjectParent__c>) oldChangedRecordsMap.values());
-
         switch on scenario {
             when SCENARIO_1 {
-                afterUpdate1(testObjectParentsNew, testObjectParentsOldMap);
+                afterUpdate1();
             }
             when SCENARIO_2 {
-                afterUpdate2(testObjectParentsNew, testObjectParentsOldMap);
+                afterUpdate2();
             }
         }
 
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
-    private void beforeUpdate1(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+    private void beforeUpdate1() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
     }
 
-    private void afterUpdate1(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+    private void afterUpdate1() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
     }
 
-    private void beforeUpdate2(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+    private void beforeUpdate2() {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
+        List<TestObjectParent__c> testObjectParentsNew = Trigger.new;
 
         for (TestObjectParent__c testObjectParent : testObjectParentsNew) {
             testObjectParent.NumberField__c = testObjectParent.TextField__c.length();
         }
     }
 
-    private void afterUpdate2(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+    private void afterUpdate2() {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
+        List<TestObjectParent__c> testObjectParentsNew = Trigger.new;
      
         List<TestObjectParent__c> parentsById = new List<TestObjectParent__c>([
             SELECT Id, TextField__c, NumberField__c, (SELECT Id, TextField__c, NumberField__c FROM TestObjects__r)
