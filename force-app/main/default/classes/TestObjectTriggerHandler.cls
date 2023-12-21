@@ -2,9 +2,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
     public static TestScenario scenario = TestScenario.SCENARIO_0;
     public static String textFieldValueForTests;
+    List<TestObject__c> testObjectsNew;
 
     public TestObjectTriggerHandler() {
         OBJEC_TYPE = TestObject__c.getSObjectType();
+        testObjectsNew = Trigger.new;
     }
 
     protected override void beforeUpdate() {
@@ -46,8 +48,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void beforeUpdate0() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
-        List<TestObject__c> testObjectsNew = Trigger.new;
-
+        
         for (TestObject__c testObject : testObjectsNew) {
             testObject.NumberField__c = testObject.TextField__c.length();
         }
@@ -56,7 +57,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void afterUpdate0() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
-        List<TestObject__c> testObjectsNew = Trigger.new;
+
         List<TestObject__c> testObjectsForUpdate = new List<TestObject__c>();
 
         for(TestObject__c testObject : testObjectsNew) {
@@ -75,7 +76,6 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void beforeUpdate1() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
-        List<TestObject__c> testObjectsNew = Trigger.new;
 
         for (TestObject__c testObject : testObjectsNew) {
             testObject.NumberField__c = testObject.TextField__c.length();
@@ -85,7 +85,6 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void afterUpdate1() {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя.
-        List<TestObject__c> testObjectsNew = Trigger.new;
 
         Map<Id, TestObjectParent__c> parentsById = new Map<Id, TestObjectParent__c>([
             SELECT Id, TextField__c, NumberField__c, (SELECT Id, Name, NumberField__c FROM TestObjects__r)
@@ -116,7 +115,6 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void beforeUpdate2() {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
-        List<TestObject__c> testObjectsNew = Trigger.new;
 
         for (TestObject__c testObject : testObjectsNew) {
             testObject.NumberField__c = testObject.TextField__c.length();
@@ -126,7 +124,6 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     private void afterUpdate2() {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
-        List<TestObject__c> testObjectsNew = Trigger.new;
 
         Map<Id, TestObjectParent__c> parentsById = new Map<Id, TestObjectParent__c>([
             SELECT Id, TextField__c, NumberField__c

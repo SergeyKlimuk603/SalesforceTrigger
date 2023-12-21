@@ -1,11 +1,13 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
 
-    public static TestScenario scenario;
+    public static TestScenario scenario = TestScenario.SCENARIO_0;
+    List<TestObjectParent__c> testObjectParentsNew;
 
     public TestObjectParentTriggerHandler() {
         System.debug('----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
 
         OBJEC_TYPE = TestObjectParent__c.getSObjectType();
+        testObjectParentsNew = Trigger.new;
     }
 
     protected override void beforeUpdate() {
@@ -21,7 +23,6 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         }
 
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
-
     }
 
     protected override void afterUpdate() {
@@ -52,7 +53,6 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
     private void beforeUpdate2() {
         // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
         // затем у всех его дочерних объектов.
-        List<TestObjectParent__c> testObjectParentsNew = Trigger.new;
 
         for (TestObjectParent__c testObjectParent : testObjectParentsNew) {
             testObjectParent.NumberField__c = testObjectParent.TextField__c.length();
@@ -69,7 +69,6 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             FROM TestObjectParent__c
             WHERE Id IN :testObjectParentsNew
         ]);
-
 
         List<TestObject__c> testObjectForUpdate = new List<TestObject__c>();
         for (TestObjectParent__c testObjectParent : parentsById) {
