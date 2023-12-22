@@ -1,9 +1,9 @@
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
-    public static Integer triggerDepth = 0;
+    protected Integer ACTIONS_MAX_DEPTH = 2;
 
-    private static Map<SObjectType, Set<TriggerAction>> runingActions = new Map<SObjectType, Set<TriggerAction>>();
+    private static Map<SObjectType, Map<TriggerAction, Integer>> runingActionsDepth = new Map<SObjectType, Map<TriggerAction, Integer>>();
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
     public TriggerHandler() {
@@ -11,11 +11,14 @@ public virtual class TriggerHandler {
     }
 
     public void run() {
-        if (isTriggerAvailable()) {
+        if (isTriggerNotAvailable()) {
             return;
         }
 
-        runingActions.get(OBJEC_TYPE).add(ACTION_TYPE);
+        Integer depthCount = runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE);
+        depthCount++;
+        runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
+        System.debug('------depthCount: ' + depthCount);
 
         switch on Trigger.operationType {
             when BEFORE_INSERT {
@@ -25,16 +28,10 @@ public virtual class TriggerHandler {
                 this.afterInsert();
             }
             when BEFORE_UPDATE {
-                triggerDepth++;
-                System.debug('------RecursionDepth: ' + triggerDepth);
                 this.beforeUpdate();
-                triggerDepth--;
             }
             when AFTER_UPDATE {
-                triggerDepth++;
-                System.debug('------RecursionDepth: ' + triggerDepth);
                 this.afterUpdate();
-                triggerDepth--;
             }
             when BEFORE_DELETE {
                 this.beforeDelete();
@@ -47,7 +44,8 @@ public virtual class TriggerHandler {
             }
         }
 
-        runingActions.get(OBJEC_TYPE).remove(ACTION_TYPE);
+        depthCount--;
+        runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
     }
 
     protected virtual void beforeInsert() {}
@@ -58,13 +56,18 @@ public virtual class TriggerHandler {
     protected virtual void afterDelete() {}
     protected virtual void afterUndelete() {}
 
-    private Boolean isTriggerAvailable() {
-        if (runingActions.get(OBJEC_TYPE) == null) {
-            runingActions.put(OBJEC_TYPE, new Set<TriggerAction>());
+    private Boolean isTriggerNotAvailable() {
+        if (runingActionsDepth.get(OBJEC_TYPE) == null) {
+            runingActionsDepth.put(OBJEC_TYPE, new Map<TriggerAction, Integer>());
+        }
+
+        if (runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) == null) {
+            runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, 0);
         }
 
         return disabledTriggers.contains(OBJEC_TYPE)
-            || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);
+            // || runingActionsDepth.get(OBJEC_TYPE).contains(ACTION_TYPE)
+            || runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) >= ACTIONS_MAX_DEPTH;
     }
 
     private TriggerAction getActionType() {

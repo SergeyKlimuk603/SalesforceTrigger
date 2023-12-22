@@ -118,5 +118,12 @@ System.debug('-----objects2: ' + objects2);
 
 //---------------------------------------------------------------------------------------------
 
+Map<String, Integer> mapp = new Map<String, Integer>{'1' => 1};
+mapp.get('1')++;
+System.debug('-----: ' + mapp.get('1'));
 
+
+Map<String, Integer> mapp = new Map<String, Integer>{'1' => 1};
+mapp.put('1', ++1);
+System.debug('-----: ' + mapp.get('1'));
 //---------------------------------------------------------------------------------------------
