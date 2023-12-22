@@ -1,7 +1,7 @@
 
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
-    public static TestScenario scenario = TestScenario.SCENARIO_0;
+    public static TestScenario scenario = TestScenario.SCENARIO_3;
     public static Integer triggerDepth = 0; // Просто индикатор глубины рекурсии триггера, на логику не влияет.
    
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
@@ -112,6 +112,27 @@ public virtual class TriggerHandler {
             'LastModifiedDate',
             'SystemModstamp'
         };
+
+        Set<String> allKeys = new Set<String>();
+        allKeys.addAll(oldRecord.getPopulatedFieldsAsMap().keySet());
+        allKeys.addAll(newRecord.getPopulatedFieldsAsMap().keySet());
+        allKeys.removeAll(ommitedKeys);
+        
+        for (String key : allKeys) {
+            if (oldRecord.get(key) != newRecord.get(key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Boolean areRecordsNotEqualsV0(SObject oldRecord, SObject newRecord) {
+        List<String> ommitedKeys = new List<String>{
+            'LastModifiedDate',
+            'SystemModstamp'
+        };
+
         Map<String, Object> oldRecordMap = oldRecord.getPopulatedFieldsAsMap();
         Map<String, Object> newRecordMap = newRecord.getPopulatedFieldsAsMap();
         Set<String> allKeys = new Set<String>();

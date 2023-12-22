@@ -18,6 +18,9 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             when SCENARIO_2 {
                 beforeUpdate2(testObjectParentsNew, testObjectParentsOldMap);
             }
+            when SCENARIO_3 {
+                beforeUpdate3(testObjectParentsNew, testObjectParentsOldMap);
+            }
         }
 
         System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
@@ -35,6 +38,9 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
                 afterUpdate1(testObjectParentsNew, testObjectParentsOldMap);
             }
             when SCENARIO_2 {
+                afterUpdate2(testObjectParentsNew, testObjectParentsOldMap);
+            }
+            when SCENARIO_3 {
                 afterUpdate2(testObjectParentsNew, testObjectParentsOldMap);
             }
         }
@@ -81,5 +87,13 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         }
 
         update testObjectForUpdate;
+    }
+
+    private void beforeUpdate3(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
+    }
+
+    private void afterUpdate3(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
     }
 }

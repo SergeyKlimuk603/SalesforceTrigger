@@ -17,6 +17,7 @@ insert testObjectsForCreate;
 List<TestObject__c> testObjectsForUpdate = [SELECT Id, Name, TextAreaField__c, NumberField__c FROM TestObject__c WHERE Name LIKE 'TestTriggerRecursion_%'];
 for(TestObject__c testObject : testObjectsForUpdate) {
     testObject.TextAreaField__c += '<p> updated </p>';
+    testObject.NumberField__c = Math.random() * 4;
 }
 update testObjectsForUpdate;
 
