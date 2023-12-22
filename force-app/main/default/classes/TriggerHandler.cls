@@ -2,7 +2,7 @@
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     public static TestScenario scenario = TestScenario.SCENARIO_0;
-    public static Integer triggerDepth = 0;
+    public static Integer triggerDepth = 0; // Просто индикатор глубины рекурсии триггера, на логику не влияет.
    
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
@@ -23,32 +23,46 @@ public virtual class TriggerHandler {
             }
             when BEFORE_UPDATE {
                 triggerDepth++;
-                System.debug('------Start Changed Record Finding before update. triggerDepth: ' + triggerDepth);
+                logTriggerDepth();
+
+                //System.debug('------ ' + getTriggerDepthLogPrefix() + ' Start Changed Record Finding before update.');
 
                 if (filloutChangedRecordsForUpdate(oldChangedRecords, newChangedRecords)) {
                     triggerDepth--;
+                    logTriggerDepth();
+                    System.debug('----- ' + getTriggerDepthLogPrefix() + ' Changed records for beforeUpdate: ' + newChangedRecords.size());
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding before update. Records for beforeUpdate: ' + newChangedRecords.size());
+                System.debug('----- ' + getTriggerDepthLogPrefix() + ' Changed records for beforeUpdate: ' + newChangedRecords.size());
+
+                //System.debug('----- ' + getTriggerDepthLogPrefix() + ' End Changed Record Finding before update. Records for beforeUpdate: ' + newChangedRecords.size());
 
                 this.beforeUpdate(newChangedRecords, new Map<Id, SObject>(oldChangedRecords));
+
                 triggerDepth--;
+                logTriggerDepth();
             }
             when AFTER_UPDATE {
                 triggerDepth++;
-                System.debug('------Start Changed Record Finding after update. triggerDepth: ' + triggerDepth);
+                logTriggerDepth();
+
+                //System.debug('------ ' + getTriggerDepthLogPrefix() + ' Start Changed Record Finding after update');
     
                 if (filloutChangedRecordsForUpdate(oldChangedRecords, newChangedRecords)) {
                     triggerDepth--;
+                    logTriggerDepth();
+                    System.debug('----- ' + getTriggerDepthLogPrefix() + ' Changed records afterUpdate: ' + newChangedRecords.size());
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding after update. Records for afterUpdate: ' + newChangedRecords.size());
+                System.debug('----- ' + getTriggerDepthLogPrefix() + ' Changed records afterUpdate: ' + newChangedRecords.size());
+                //System.debug('----- ' + getTriggerDepthLogPrefix() + ' End Changed Record Finding after update. Records for afterUpdate: ' + newChangedRecords.size());
 
                 this.afterUpdate(newChangedRecords, new Map<Id, SObject>(oldChangedRecords));
 
                 triggerDepth--;
+                logTriggerDepth();
             }
             when BEFORE_DELETE {
                 this.beforeDelete(Trigger.old, Trigger.oldMap);
@@ -129,5 +143,21 @@ public virtual class TriggerHandler {
             != newRecord.clone(false, false, false, false);
 
         // return oldRecord != newRecord;
+    }
+
+    private void logTriggerDepth() {
+        System.debug('------- ' + getTriggerDepthLogPrefix() 
+            + OBJEC_TYPE + '__' + Trigger.operationType + ' triggerDepth: ' + triggerDepth
+        );
+    }
+
+    protected String getTriggerDepthLogPrefix() {
+        String depthPrefix = '';
+
+        for (Integer i = 0; i < triggerDepth; i++) {
+            depthPrefix += '___________ ';
+        }
+
+        return depthPrefix;
     }
 }

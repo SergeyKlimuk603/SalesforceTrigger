@@ -7,7 +7,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     }
 
     protected override void beforeUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         List<TestObject__c> testObjectsNew = newChangedRecords;
         Map<Id, TestObject__c> testObjectsOldMap = 
@@ -25,11 +25,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     protected override void afterUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
         List<TestObject__c> testObjectsNew = newChangedRecords;
         Map<Id, TestObject__c> testObjectsOldMap = 
@@ -48,7 +48,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     private void beforeUpdate0(List<TestObject__c> testObjectsNew, Map<Id, TestObject__c> testObjectsOldMap) {
@@ -113,7 +113,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----testObjectsForUpdate.size(): ' + testObjectsForUpdate.size());
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' testObjectsForUpdate.size(): ' + testObjectsForUpdate.size());
 
         update testObjectsForUpdate;
     }

@@ -1,13 +1,11 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
 
     public TestObjectParentTriggerHandler() {
-        System.debug('----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
-
         OBJEC_TYPE = TestObjectParent__c.getSObjectType();
     }
 
     protected override void beforeUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         List<TestObjectParent__c> testObjectParentsNew = newChangedRecords;
         Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
@@ -22,11 +20,11 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     protected override void afterUpdate(List<SObject> newChangedRecords, Map<Id, SObject> oldChangedRecordsMap) {
-        System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('---- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
         
         List<TestObjectParent__c> testObjectParentsNew = newChangedRecords;
         Map<Id, TestObjectParent__c> testObjectParentsOldMap = 
@@ -41,7 +39,7 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     private void beforeUpdate1(List<TestObjectParent__c> testObjectParentsNew, Map<Id, TestObjectParent__c> testObjectParentsOldMap) {
