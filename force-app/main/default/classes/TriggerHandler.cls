@@ -30,15 +30,17 @@ public virtual class TriggerHandler {
             }
             when BEFORE_UPDATE {
                 triggerDepth++;
-                System.debug('------Start Changed Record Finding ' + Trigger.operationType 
-                    + '. triggerDepth: ' + triggerDepth);
+                logTriggerDepth();
+                System.debug('------ ' + getTriggerDepthLogPrefix() + ' Start Unprocessed Record Finding ' + Trigger.operationType);
+                
 
                 if (filloutUnprocessedRecordsForUpdate(oldUnprocessedRecords, newUnprocessedRecords)) {
                     triggerDepth--;
+                    logTriggerDepth();
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding ' + Trigger.operationType 
+                System.debug('----- ' + getTriggerDepthLogPrefix() + ' End Unprocessed Record Finding ' + Trigger.operationType 
                     + '. Records for ' + Trigger.operationType + ': ' + newUnprocessedRecords.size());
 
                 Map<Id, SObject> oldUnprocessedRecordsMap = new Map<Id, SObject>(oldUnprocessedRecords);
@@ -49,18 +51,20 @@ public virtual class TriggerHandler {
                 allProcessedRecords.get(OBJEC_TYPE).get(ACTION_TYPE).removeAll(oldUnprocessedRecordsMap.keySet());
 
                 triggerDepth--;
+                logTriggerDepth();
             }
             when AFTER_UPDATE {
                 triggerDepth++;
-                System.debug('------Start Changed Record Finding ' + Trigger.operationType 
-                    + '. triggerDepth: ' + triggerDepth);
+                logTriggerDepth();
+                System.debug('------ ' + getTriggerDepthLogPrefix() + ' Start Unprocessed Record Finding ' + Trigger.operationType);
 
                 if (filloutUnprocessedRecordsForUpdate(oldUnprocessedRecords, newUnprocessedRecords)) {
                     triggerDepth--;
+                    logTriggerDepth();
                     return;
                 }
 
-                System.debug('-----End Changed Record Finding ' + Trigger.operationType 
+                System.debug('----- ' + getTriggerDepthLogPrefix() + ' End Unprocessed Record Finding ' + Trigger.operationType 
                     + '. Records for ' + Trigger.operationType + ': ' + newUnprocessedRecords.size());
 
                 Map<Id, SObject> oldUnprocessedRecordsMap = new Map<Id, SObject>(oldUnprocessedRecords);
@@ -71,6 +75,7 @@ public virtual class TriggerHandler {
                 allProcessedRecords.get(OBJEC_TYPE).get(ACTION_TYPE).removeAll(oldUnprocessedRecordsMap.keySet());
 
                 triggerDepth--;
+                logTriggerDepth();
             }
             when BEFORE_DELETE {
                 this.beforeDelete(Trigger.old, Trigger.oldMap);
@@ -130,7 +135,7 @@ public virtual class TriggerHandler {
             }
         }
 
-        System.debug('-----newUnprocessedRecords.size(): ' + newUnprocessedRecords.size());
+        System.debug('----- ' + getTriggerDepthLogPrefix() + ' newUnprocessedRecords.size(): ' + newUnprocessedRecords.size());
 
         Boolean hasNoUnprocessedRecords = newUnprocessedRecords.isEmpty();
 
@@ -147,6 +152,22 @@ public virtual class TriggerHandler {
         }
         
         return allProcessedRecords.get(OBJEC_TYPE).get(ACTION_TYPE);
+    }
+
+    private void logTriggerDepth() {
+        System.debug('------- ' + getTriggerDepthLogPrefix() 
+            + OBJEC_TYPE + '__' + Trigger.operationType + ' triggerDepth: ' + triggerDepth
+        );
+    }
+
+    protected String getTriggerDepthLogPrefix() {
+        String depthPrefix = '';
+
+        for (Integer i = 0; i < triggerDepth; i++) {
+            depthPrefix += '___________ ';
+        }
+
+        return depthPrefix;
     }
 
     public enum TriggerAction {INSERT_ACTION, UPDATE_ACTION, DELETE_ACTION, UNDELETE_ACTION}
