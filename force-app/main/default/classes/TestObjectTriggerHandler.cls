@@ -7,7 +7,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
     }
 
     protected override void beforeUpdate() {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('-----' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         switch on scenario {
             when SCENARIO_0 {
@@ -21,11 +21,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('-----' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     protected override void afterUpdate() {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
+        System.debug('-----' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' START');
 
         switch on scenario {
             when SCENARIO_0 {
@@ -39,7 +39,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
+        System.debug('-----' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
     }
 
     private void beforeUpdate0() {
@@ -107,7 +107,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.debug('-----testObjectsForUpdate.size(): ' + testObjectsForUpdate.size());
+        System.debug('-----' + getTriggerDepthLogPrefix() + ' testObjectsForUpdate.size(): ' + testObjectsForUpdate.size());
 
         update testObjectsForUpdate;
     }

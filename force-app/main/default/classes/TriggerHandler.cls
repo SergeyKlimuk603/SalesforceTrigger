@@ -1,10 +1,11 @@
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
-    protected Integer ACTIONS_MAX_DEPTH = 2;
+    protected Integer ACTIONS_MAX_DEPTH = 5;
+    public static Integer triggerDepth = 0; // Регулятор глубины рекурсии
     public static TestScenario scenario = TestScenario.SCENARIO_0;
 
-    private static Map<SObjectType, Map<TriggerAction, Integer>> runingActionsDepth = new Map<SObjectType, Map<TriggerAction, Integer>>();
+    //private static Map<SObjectType, Map<TriggerAction, Integer>> runingActionsDepth = new Map<SObjectType, Map<TriggerAction, Integer>>();
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
     public TriggerHandler() {
@@ -16,10 +17,10 @@ public virtual class TriggerHandler {
             return;
         }
 
-        Integer depthCount = runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE);
-        depthCount++;
-        runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
-        System.debug('------depthCount: ' + depthCount);
+        // Integer depthCount = runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE);
+        // depthCount++;
+        // runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
+        //System.debug('------depthCount: ' + depthCount);
 
         switch on Trigger.operationType {
             when BEFORE_INSERT {
@@ -29,10 +30,22 @@ public virtual class TriggerHandler {
                 this.afterInsert();
             }
             when BEFORE_UPDATE {
+                triggerDepth++;
+                logTriggerDepth();
+
                 this.beforeUpdate();
+
+                triggerDepth--;
+                logTriggerDepth();
             }
             when AFTER_UPDATE {
+                triggerDepth++;
+                logTriggerDepth();
+
                 this.afterUpdate();
+
+                triggerDepth--;
+                logTriggerDepth();
             }
             when BEFORE_DELETE {
                 this.beforeDelete();
@@ -45,8 +58,8 @@ public virtual class TriggerHandler {
             }
         }
 
-        depthCount--;
-        runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
+        // depthCount--;
+        // runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, depthCount);
     }
 
     protected virtual void beforeInsert() {}
@@ -58,17 +71,18 @@ public virtual class TriggerHandler {
     protected virtual void afterUndelete() {}
 
     private Boolean isTriggerNotAvailable() {
-        if (runingActionsDepth.get(OBJEC_TYPE) == null) {
-            runingActionsDepth.put(OBJEC_TYPE, new Map<TriggerAction, Integer>());
-        }
+        // if (runingActionsDepth.get(OBJEC_TYPE) == null) {
+        //     runingActionsDepth.put(OBJEC_TYPE, new Map<TriggerAction, Integer>());
+        // }
 
-        if (runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) == null) {
-            runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, 0);
-        }
+        // if (runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) == null) {
+        //     runingActionsDepth.get(OBJEC_TYPE).put(ACTION_TYPE, 0);
+        // }
 
         return disabledTriggers.contains(OBJEC_TYPE)
+            || triggerDepth >= ACTIONS_MAX_DEPTH;
             // || runingActionsDepth.get(OBJEC_TYPE).contains(ACTION_TYPE)
-            || runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) >= ACTIONS_MAX_DEPTH;
+            // || runingActionsDepth.get(OBJEC_TYPE).get(ACTION_TYPE) >= ACTIONS_MAX_DEPTH
     }
 
     private TriggerAction getActionType() {
@@ -89,6 +103,22 @@ public virtual class TriggerHandler {
         }
 
         return action;
+    }
+
+    private void logTriggerDepth() {
+        System.debug('------- ' + getTriggerDepthLogPrefix() 
+            + OBJEC_TYPE + '__' + Trigger.operationType + ' triggerDepth: ' + triggerDepth
+        );
+    }
+
+    protected String getTriggerDepthLogPrefix() {
+        String depthPrefix = '';
+
+        for (Integer i = 0; i < triggerDepth; i++) {
+            depthPrefix += '___________ ';
+        }
+
+        return depthPrefix;
     }
 
     public enum TriggerAction {INSERT_ACTION, UPDATE_ACTION, DELETE_ACTION, UNDELETE_ACTION}
