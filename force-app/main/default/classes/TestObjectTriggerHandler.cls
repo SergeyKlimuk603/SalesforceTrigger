@@ -1,6 +1,5 @@
 public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
-    public static TestScenario scenario = TestScenario.SCENARIO_0;
     public static String textFieldValueForTests;
 
     public TestObjectTriggerHandler() {

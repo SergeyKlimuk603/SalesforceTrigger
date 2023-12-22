@@ -1,7 +1,5 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
 
-    public static TestScenario scenario;
-
     public TestObjectParentTriggerHandler() {
         System.debug('----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
 
@@ -21,7 +19,6 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         }
 
         System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
-
     }
 
     protected override void afterUpdate() {

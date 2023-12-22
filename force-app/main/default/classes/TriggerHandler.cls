@@ -2,6 +2,7 @@ public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
     protected Integer ACTIONS_MAX_DEPTH = 2;
+    public static TestScenario scenario = TestScenario.SCENARIO_0;
 
     private static Map<SObjectType, Map<TriggerAction, Integer>> runingActionsDepth = new Map<SObjectType, Map<TriggerAction, Integer>>();
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();

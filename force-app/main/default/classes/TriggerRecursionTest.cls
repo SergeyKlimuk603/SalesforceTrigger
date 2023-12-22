@@ -55,7 +55,7 @@ private class TriggerRecursionTest {
 
     static void test_memberTextChanged_Scenario0(Integer membersAmount, String details) {
         // Запись объекта TestObject__c обновляет поле TextField__c самой себя.
-        TestObjectTriggerHandler.scenario = TestScenario.SCENARIO_0;
+        TriggerHandler.scenario = TestScenario.SCENARIO_0;
         
         String fieldChanges = 'Field was changed';
         TestObjectTriggerHandler.textFieldValueForTests = fieldChanges;
@@ -68,7 +68,6 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObject__c member : membersBeforeUpdate) {
-            // System.debug('-----member.TextField: ' + member.TextField__c);
             Assert.isNull(member.TextField__c);
             Assert.isNull(member.NumberField__c);
             Assert.isNull(member.TextAreaField__c);
@@ -157,8 +156,7 @@ private class TriggerRecursionTest {
     static void test_memberTextChanged_Scenario1(Integer familiesAmount, Integer familyMembersAmount, String details) {
         // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
         // дочерних объектов того же родителя. Сам родитель не обновляется.
-        TestObjectTriggerHandler.scenario = TestScenario.SCENARIO_1;
-        TestObjectParentTriggerHandler.scenario = TestScenario.SCENARIO_1;
+        TriggerHandler.scenario = TestScenario.SCENARIO_1;
         
         String fieldChanges = 'Field was changed';
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
@@ -173,7 +171,6 @@ private class TriggerRecursionTest {
         for (TestObjectParent__c family : familiesBeforeUpdate) {
             Assert.isNull(family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
-                // System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
             }
         }
@@ -259,8 +256,7 @@ private class TriggerRecursionTest {
     }
 
     static void test_memberTextChanged_Scenario2(Integer familiesAmount, Integer familyMembersAmount, String details) {
-        TestObjectTriggerHandler.scenario = TestScenario.SCENARIO_2;
-        TestObjectParentTriggerHandler.scenario = TestScenario.SCENARIO_2;
+        TriggerHandler.scenario = TestScenario.SCENARIO_2;
         String fieldChanges = 'Field was changed';
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
 
@@ -272,11 +268,9 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObjectParent__c family : familiesBeforeUpdate) {
-            // System.debug('-----family.TextField: ' + family.TextField__c);
             Assert.isNull(family.TextField__c);
             Assert.isNull(family.NumberField__c);
             for (TestObject__c member : family.TestObjects__r) {
-                // System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
                 Assert.isNull(member.NumberField__c);
             }
@@ -309,6 +303,7 @@ private class TriggerRecursionTest {
             Assert.areEqual((fieldChanges + '   ' + family.Name).length(), family.NumberField__c);
             for (TestObject__c member : family.TestObjects__r) {
                 // System.debug('-----member.TextField: ' + member.TextField__c);
+                // System.debug('-----member.NumberField__c: ' + member.NumberField__c);
                 Assert.areEqual(fieldChanges + '   ' + family.Name, member.TextField__c);
                 Assert.areEqual((fieldChanges + '   ' + family.Name).length(), member.NumberField__c);
             }
@@ -365,8 +360,7 @@ private class TriggerRecursionTest {
     }
 
     static void test_familyTextChanged_Scenario2(Integer familiesAmount, Integer familyMembersAmount, String details) {
-        TestObjectTriggerHandler.scenario = TestScenario.SCENARIO_2;
-        TestObjectParentTriggerHandler.scenario = TestScenario.SCENARIO_2;
+        TriggerHandler.scenario = TestScenario.SCENARIO_2;
         String fieldChanges = 'Field was changed';
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
 
@@ -377,10 +371,8 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObjectParent__c family : familiesBeforeUpdate) {
-            //System.debug('-----family.TextField: ' + family.TextField__c);
             Assert.isNull(family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
-                //System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
             }
         }
