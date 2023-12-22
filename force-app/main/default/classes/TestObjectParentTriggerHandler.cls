@@ -1,6 +1,5 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
 
-    public static TestScenario scenario = TestScenario.SCENARIO_0;
     List<TestObjectParent__c> testObjectParentsNew;
 
     public TestObjectParentTriggerHandler() {

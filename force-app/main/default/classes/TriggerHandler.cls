@@ -1,6 +1,7 @@
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
+    public static TestScenario scenario = TestScenario.SCENARIO_0;
     public static Integer triggerDepth = 0;
 
     private static Map<SObjectType, Set<TriggerAction>> runingActions = new Map<SObjectType, Set<TriggerAction>>();
