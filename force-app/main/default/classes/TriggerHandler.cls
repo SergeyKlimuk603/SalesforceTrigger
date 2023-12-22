@@ -1,6 +1,7 @@
 
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
+    public static TestScenario scenario = TestScenario.SCENARIO_0;
     public static Integer triggerDepth = 0;
    
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
