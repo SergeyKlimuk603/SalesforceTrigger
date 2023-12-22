@@ -2,7 +2,7 @@ public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
     public static TestScenario scenario = TestScenario.SCENARIO_0;
-    public static Integer triggerDepth = 0;
+    public static Integer triggerDepth = 0; // Просто индикатор глубины рекурсии триггера, на логику не влияет.
 
     private static Map<SObjectType, Set<TriggerAction>> runingActions = new Map<SObjectType, Set<TriggerAction>>();
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
@@ -27,15 +27,21 @@ public virtual class TriggerHandler {
             }
             when BEFORE_UPDATE {
                 triggerDepth++;
-                System.debug('------RecursionDepth: ' + triggerDepth);
+                logTriggerDepth();
+
                 this.beforeUpdate();
+
                 triggerDepth--;
+                logTriggerDepth();
             }
             when AFTER_UPDATE {
                 triggerDepth++;
-                System.debug('------RecursionDepth: ' + triggerDepth);
+                logTriggerDepth();
+
                 this.afterUpdate();
+
                 triggerDepth--;
+                logTriggerDepth();
             }
             when BEFORE_DELETE {
                 this.beforeDelete();
@@ -86,6 +92,22 @@ public virtual class TriggerHandler {
         }
 
         return action;
+    }
+
+    private void logTriggerDepth() {
+        System.debug('------- ' + getTriggerDepthLogPrefix() 
+            + OBJEC_TYPE + '__' + Trigger.operationType + ' triggerDepth: ' + triggerDepth
+        );
+    }
+
+    protected String getTriggerDepthLogPrefix() {
+        String depthPrefix = '';
+
+        for (Integer i = 0; i < triggerDepth; i++) {
+            depthPrefix += '___________ ';
+        }
+
+        return depthPrefix;
     }
 
     public enum TriggerAction {INSERT_ACTION, UPDATE_ACTION, DELETE_ACTION, UNDELETE_ACTION}
