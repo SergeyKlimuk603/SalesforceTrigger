@@ -3,7 +3,7 @@ public virtual class TriggerHandler {
     protected TriggerAction ACTION_TYPE;
     protected Integer ACTIONS_MAX_DEPTH = 5;
     public static Integer triggerDepth = 0; // Регулятор глубины рекурсии
-    public static TestScenario scenario = TestScenario.SCENARIO_0;
+    public static TestScenario scenario = TestScenario.SCENARIO_3;
 
     //private static Map<SObjectType, Map<TriggerAction, Integer>> runingActionsDepth = new Map<SObjectType, Map<TriggerAction, Integer>>();
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();

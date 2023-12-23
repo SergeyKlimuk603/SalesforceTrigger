@@ -16,6 +16,9 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             when SCENARIO_2 {
                 beforeUpdate2();
             }
+            when SCENARIO_3 {
+                beforeUpdate3();
+            }
         }
 
         System.debug('-----' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
@@ -30,6 +33,9 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
             }
             when SCENARIO_2 {
                 afterUpdate2();
+            }
+            when SCENARIO_3 {
+                afterUpdate3();
             }
         }
 
@@ -77,5 +83,13 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         }
 
         update testObjectForUpdate;
+    }
+
+    private void beforeUpdate3() {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
+    }
+
+    private void afterUpdate3() {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
     }
 }
