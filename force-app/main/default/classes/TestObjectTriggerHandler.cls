@@ -21,6 +21,9 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             when SCENARIO_2 {
                 beforeUpdate2();
             }
+            when SCENARIO_3 {
+                beforeUpdate3();
+            }
         }
 
         System.debug('----- ' + getTriggerDepthLogPrefix() + ' TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType + ' FINISH');
@@ -38,6 +41,9 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             }
             when SCENARIO_2 {
                 afterUpdate2();
+            }
+            when SCENARIO_3 {
+                afterUpdate3();
             }
         }
 
@@ -135,6 +141,35 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
         }
 
         update parentsById.values();
+    }
+
+    private void beforeUpdate3() {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
+        
+        for(TestObject__c testObject : testObjectsNew) {
+            testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
+        }
+    }
+
+    private void afterUpdate3() {
+        // Обновление запписи с логирование истории запущенных процессов в поле TextAreaField__c самой записи
+
+        List<TestObject__c> testObjectsForUpdate = new List<TestObject__c>();
+
+        for(TestObject__c testObject : testObjectsNew) {
+            testObjectsForUpdate.add(
+                new TestObject__c(
+                    Id = testObject.Id,
+                    TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
+                )
+            );
+        }
+
+        // disabledTriggers.add(TestObject__c.getSObjectType());
+        // update testObjectsForUpdate;
+        // disabledTriggers.remove(TestObject__c.getSObjectType());
+ 
+        update testObjectsForUpdate;
     }
 
     private List<Id> getIdsFromList(List<SObject> records) {

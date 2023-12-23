@@ -1,7 +1,7 @@
 public virtual class TriggerHandler {
     protected final SObjectType OBJEC_TYPE;
     protected TriggerAction ACTION_TYPE;
-    public static TestScenario scenario = TestScenario.SCENARIO_0;
+    public static TestScenario scenario = TestScenario.SCENARIO_3;
     public static Integer triggerDepth = 0; // Просто индикатор глубины рекурсии триггера, на логику не влияет.
 
     private static Map<SObjectType, Set<TriggerAction>> runingActions = new Map<SObjectType, Set<TriggerAction>>();
